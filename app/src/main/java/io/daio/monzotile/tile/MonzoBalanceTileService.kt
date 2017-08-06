@@ -33,7 +33,7 @@ class MonzoBalanceTileService : TileService() {
         job = launch(CommonPool) {
             val balance = api.getBalance().await()
             qsTile.state = Tile.STATE_ACTIVE
-            qsTile.label = balance.amountString
+            qsTile.label = "${balance.amountString}\n${balance.spendString}"
             qsTile.updateTile()
         }
     }

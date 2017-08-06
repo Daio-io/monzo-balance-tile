@@ -6,18 +6,22 @@ import io.daio.monzotile.network.HttpClient
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
+import java.io.IOException
 
 class MonzoApi(private val httpClient: HttpClient) {
 
-    private val BASE_URL = "https://api.monzo.com/"
-    private val BALANCE_QUERY = "/balance?account_id=" + Config.ACCOUNT_ID
-    private val ACCESS_TOKEN = "Bearer " + Config.ACCESS_TOKEN
-    private val headers = mapOf(Pair("Authorization", ACCESS_TOKEN))
+    private val BASE_URL = "https://kotzo.herokuapp.com/"
+    private val BALANCE_QUERY = "balance?apikey=${Config.API_KEY}"
 
     fun getBalance(): Deferred<Balance> {
         return async(CommonPool) {
-            val response = httpClient.getSync(BASE_URL + BALANCE_QUERY, headers)
-            Balance.fromJsonString(response)
+            try {
+                val response = httpClient.getSync(BASE_URL + BALANCE_QUERY)
+                Balance.fromJsonString(response)
+
+            } catch (ex: IOException) {
+                Balance(0, "GBP", "£0.00", "£0.00")
+            }
         }
     }
 }
